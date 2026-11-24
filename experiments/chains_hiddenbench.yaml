@@ -1,0 +1,48 @@
+experiment: chains_hiddenbench
+paper: [Figure 11a, Figure 10b, Appendix rounds table]
+base: {served: qwen3.5-9b, weights: "${RCI_MODELS}/Qwen3.5-9B"}
+data:
+  writer: qwen3.5-9b
+  written: "${RCI_DATA}/chains/hiddenbench_written"
+  n: 4000
+  reference_agreement: 0.75
+chains:
+  t3:
+    label: HiddenBench T3, collective chain (three-round debate)
+    adapter: hiddenbench
+    kind: collective
+    sets_dir: "${RCI_DATA}/chains/hiddenbench"
+    lineages: [a, b]
+    seats: {a: [0, 1], b: [2, 3]}
+    protocol:
+      collective: {name: debate, kwargs: {rounds: 3}}
+      solo: {name: independent, kwargs: {}}
+    task_kwargs: {profile: hidden, confidence: true}
+    run: {max-actions: 16, max-steps: 24, concurrency: 64}
+    sets: {slice: 400}
+    seeds: {select: [51, 52], confirm: [65, 66], confirm_step: 2, harvest: 3000, harvest_games: 2}
+    band: {rho_hi: 0.875, f_max: 100, max_age: 2, t_min: 20}
+    rows: {families: [D, R2, P], min_tokens: 300, max_len: 16384, per_question: 4, p_share: 0.20}
+    mix: {tokens_per_round: 2000000, replay: "1/4", max_passes: 12, call_share: [1, 4]}
+    train: {lr: 2.0e-5, batch: 8, epochs: 1, warmup: 0.03, grad_clip: 1.0, seed: 3000}
+    alphas: ["1", "2"]
+    health: {budget_band: [0.7, 1.5], budget_low_gates: false, z_max: 0.05, f_max: 0.10, r_min: 0.5,
+             control_floor: 0.05}
+    release: {k: 0.0, margin: 0.026, strict: true}
+    stop: {max_rounds: 8}
+  t3_solo:
+    label: HiddenBench T3, matched single-agent self-training chain (four independent agents)
+    inherit: t3
+    kind: solo
+    rows: {families: [S]}
+    health: {z_max: null, r_min: null}
+    train: {seed_offset: 100}
+  t3k:
+    label: HiddenBench T3k, collective chain with control rows, half and full steps
+    inherit: t3
+    alphas: ["1/2", "1"]
+    seeds: {confirm: [140, 141], harvest: 5000}
+    keep: {share: "1/4", families: [D, R2]}
+    twin: {decision_token_out: true, decision_families: [D, R2], answer_value_weight: skeleton,
+           answer_value_families: [D]}
+    stop: {max_rounds: 8, flat_first_two: true}

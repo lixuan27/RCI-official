@@ -1,0 +1,27 @@
+experiment: channels
+paper: [Figure 7, Appendix Table channels (a), Appendix Table channels (b)]
+tasks:
+  ladder_q9: {experiment: ladder, grade_task: hiddenbench, model: q9}
+  ladder_q27: {experiment: ladder, grade_task: hiddenbench, model: q27}
+  ladder_q35: {experiment: ladder, grade_task: hiddenbench, model: q35}
+  free_q27: {experiment: emergence, grade_task: free_budget, model: q27}
+  prompts_q27: {experiment: emergence, grade_task: prompts, model: q27}
+  cap_q27: {experiment: emergence, grade_task: cap, model: q27}
+pairs:
+  - [ladder_q9, Fact forwarding, Debate-2R+H]
+  - [ladder_q27, Fact forwarding, Debate-2R+H]
+  - [ladder_q35, Fact forwarding, Debate-2R+H]
+  - [ladder_q27, Shared context, Debate-2R+H]
+  - [ladder_q27, SC+Forwarding, Shared context]
+  - [free_q27, Designed hub, Self-organized]
+  - [free_q27, Designed hub, Self-organized + planning round]
+  - [prompts_q27, Prompt from the rules, Self-org. (56)]
+  - [prompts_q27, Evolved prompt (first chain), Self-org. (56)]
+  - [prompts_q27, Evolved prompt (second chain), Self-org. (56)]
+  - [cap_q27, Designed tree, Self-organized + planning (cap)]
+  - [free_q27, Self-organized + planning round, Self-organized]
+  - [cap_q27, Cap + prompt (evolved), Self-organized + planning (cap)]
+  - [cap_q27, Self-organized + planning (cap), No relay (cap)]
+ledger:
+  prompts_q27: ["Self-org. (56)"]
+  cap_q27: [Self-organized + planning (cap), Cap + prompt (rules), Cap + prompt (evolved), Designed tree]

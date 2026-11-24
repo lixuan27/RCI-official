@@ -1,0 +1,40 @@
+run_id: credit_team
+model_path: "${RCI_MODELS}/Qwen3.5-4B"
+seed: 0
+task: audit
+task_kwargs: {level: 4, f1: true}
+source: {kind: auto, min_contradictions: 4}
+protocol: blackboard
+n_agents: 4
+trainees: all
+credit: team
+adv_mode: grpo
+beta: 0.5
+lam: 0.25
+k: 8
+questions_per_step: 8
+max_actions: 60
+max_steps: 60
+gen_limit: 8192
+merge_prefix: true
+max_samples_per_agent: 4
+async_rollout: true
+val_every: 10
+val_k: 4
+val_projects: [qemu, react, spark, zephyr]
+rollout_workers: 8
+lr: 1.0e-6
+grad_clip: 1.0
+eps_lo: 0.2
+eps_hi: 0.28
+tis_c: 2.0
+minibatches: 4
+l_max: 32768
+pad_multiple: 1024
+total_steps: 40
+ckpt_every: 2
+hf_every: 20
+keep_ckpts: 2
+verify_sync_every: 25
+wandb_project: rci
+wandb_mode: disabled

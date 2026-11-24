@@ -1,0 +1,61 @@
+experiment: ladder
+paper: [Table 2, Figure 1a, Figure 3b]
+models:
+  q27: qwen3.8-27b
+  q9: qwen3.5-9b
+  q35: qwen3.6-35b-a3b
+defaults:
+  task: hiddenbench
+  task_kwargs: {profile: hidden, confidence: true}
+  n_agents: 4
+  seeds: 0-7
+  run: {max-actions: 16, max-steps: 24, concurrency: 16}
+cells:
+  - name: pool
+    label: Independent members
+    protocol: independent
+  - name: full_info
+    label: Full-information agent
+    protocol: independent
+    task_kwargs: {profile: full}
+  - name: bb
+    label: Blackboard
+    protocol: blackboard
+    models: [q27, q9]
+  - name: debate2
+    label: Debate-2R
+    protocol: debate
+    protocol_kwargs: {rounds: 2}
+  - name: debate2_h
+    label: Debate-2R+H
+    protocol: debate
+    protocol_kwargs: {rounds: 2}
+    task_kwargs: {hint: true}
+  - name: debate3_h
+    label: Debate-3R+H
+    protocol: debate
+    protocol_kwargs: {rounds: 3}
+    task_kwargs: {hint: true}
+  - name: sc
+    label: Shared context
+    protocol: debate
+    protocol_kwargs: {rounds: 2, shared_context: true}
+    task_kwargs: {hint: true}
+  - name: ff
+    label: Fact forwarding
+    protocol: debate
+    protocol_kwargs: {rounds: 2, forward_facts: true}
+    task_kwargs: {hint: true}
+  - name: sc_ff
+    label: SC+Forwarding
+    protocol: debate
+    protocol_kwargs: {rounds: 2, shared_context: true, forward_facts: true}
+    task_kwargs: {hint: true}
+    models: [q27, q9]
+grade:
+  options: [--stratify-seats, --seat-split, balanced, --strict-pool, --task-rng]
+  tasks:
+    hiddenbench:
+      task: hiddenbench
+      pool: [pool]
+      cells: [full_info, bb, debate2, debate2_h, debate3_h, sc, ff, sc_ff]

@@ -1,0 +1,25 @@
+experiment: chains_hanabi
+paper: [Table 7, Figure 10c, Appendix rounds table]
+base: {served: qwen3.5-9b, weights: "${RCI_MODELS}/Qwen3.5-9B"}
+chains:
+  hanabi:
+    label: Hanabi, four Qwen3.5-9B agents, recursive chain
+    adapter: hanabi
+    harvest: {deals: 500, games: 4, stall_games: 8, stall_held: 3, stall_adv_share: 0.6, stall_adv_mean: 0.5}
+    sets: {select: 300, confirm: 600}
+    rows: {cap: 8000, drop_uncertain_plays: true, known_playable_from_round: 6}
+    train: {lr: 5.0e-6, lr_bounds: [2.5e-6, 8.0e-5], batch: 32, epochs: 1, warmup: 0.03, grad_clip: 1.0,
+            pad_multiple: 256, seed: 4000}
+    alphas: ["1/2", "1", "2"]
+    rank: ev_mean
+    health: {protocol_share_max: 0.001, completion_tokens_max: 5}
+    bootstrap: {n: 2000, seed: 0}
+    release: {k: 1.0, margin: 0.0, strict: true}
+    stop: {max_releases: 6, max_rounds: 16}
+  hanabi_control:
+    label: Hanabi, non-recursive control chain (games of the fixed generation G1)
+    inherit: hanabi
+    parent: hanabi
+    fork: {gen: 1, stop_with_parent_releases: 4}
+    harvester: start
+    train: {seed_offset: 100}

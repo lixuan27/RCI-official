@@ -1,0 +1,101 @@
+experiment: shared
+paper: [Table 1]
+models:
+  q27: qwen3.8-27b
+defaults:
+  n_agents: 4
+  seeds: [0]
+cells:
+  - name: gpqa_pool
+    label: Independent members
+    task: gpqa
+    task_kwargs: {confidence: true}
+    protocol: independent
+    seeds: 0-3
+    run: {concurrency: 16}
+  - name: gpqa_env_pool
+    label: Independent members, same environment
+    task: gpqa
+    task_kwargs: {confidence: true}
+    protocol: blackboard_private
+    seeds: 0-1
+    run: {concurrency: 16}
+  - name: gpqa_bb
+    label: Blackboard
+    task: gpqa
+    task_kwargs: {confidence: true}
+    protocol: blackboard
+    run: {concurrency: 16, save-transcripts: true}
+  - name: gpqa_debate2
+    label: Debate-2R
+    task: gpqa
+    task_kwargs: {confidence: true}
+    protocol: debate
+    protocol_kwargs: {rounds: 2, content_cap: 2048, record_cap: 2048}
+    run: {concurrency: 16, save-transcripts: true}
+  - name: gpqa_self_refine
+    label: Self-Refine-2R
+    task: gpqa
+    task_kwargs: {confidence: true}
+    protocol: debate
+    protocol_kwargs: {rounds: 2, content_cap: 2048, record_cap: 2048, self_refine: true}
+    run: {concurrency: 16, save-transcripts: true}
+  - name: gpqa_sequential
+    label: Sequential-4
+    task: gpqa
+    task_kwargs: {confidence: true}
+    protocol: sequential
+    protocol_kwargs: {attempts: 4}
+    n_agents: 1
+    run: {concurrency: 16, max-steps: 100, save-transcripts: true}
+  - name: ds_pool
+    label: Independent members
+    task: docsweep
+    task_kwargs: &ds {root: "${RCI_DATA}/docsweep", tokenizer: "${RCI_MODELS}/Qwen3.8-27B", confidence: true, questions: "${CONFIGS}/docsweep/questions.json", split: eval, note_advice: true}
+    protocol: independent
+    seeds: 0-3
+    run: &dsrun {max-actions: 12, max-steps: 24, gen-limit: 16384, concurrency: 24, save-transcripts: true}
+  - name: ds_self_organized
+    label: Self-organized
+    task: docsweep
+    task_kwargs: *ds
+    protocol: docsweep_board
+    protocol_kwargs: {planning_steps: 2, wait_until: 16}
+    seeds: 0-3
+    run: *dsrun
+  - name: ds_notes
+    label: Notes (self-written prompt)
+    task: docsweep
+    task_kwargs: *ds
+    protocol: docsweep_board
+    protocol_kwargs: {planning_steps: 2, wait_until: 16, prompt_file: "${CONFIGS}/notes/docsweep_rules_A.json"}
+    seeds: [0]
+    run: *dsrun
+  - name: ds_aggregator
+    label: Designed aggregator
+    task: docsweep
+    task_kwargs: *ds
+    protocol: docsweep_board
+    protocol_kwargs: {planning_steps: 2, wait_until: 16, prompt_file: "${CONFIGS}/notes/docsweep_aggregator4.json"}
+    seeds: [0]
+    run: *dsrun
+grade:
+  options: [--strict-pool, --task-rng]
+  tasks:
+    gpqa_shared:
+      task: gpqa
+      own_family: true
+      pool: [gpqa_pool]
+      cells: [gpqa_bb, gpqa_debate2, gpqa_self_refine, gpqa_sequential]
+    gpqa_env:
+      task: gpqa
+      own_family: true
+      pool: [gpqa_env_pool]
+      cells: [gpqa_bb]
+    docsweep:
+      task: docsweep
+      own_family: true
+      per_question: true
+      task_kwargs: {tokenizer: "${RCI_MODELS}/Qwen3.8-27B", questions: "${CONFIGS}/docsweep/questions.json", split: eval}
+      pool: [ds_pool]
+      cells: [ds_self_organized, ds_notes, ds_aggregator]

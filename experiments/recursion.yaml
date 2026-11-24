@@ -1,0 +1,95 @@
+experiment: recursion
+paper: [Table 4, Figure 1b, Appendix recursion]
+sets:
+  train: ["${RCI_DATA}/splitbench/train", "${RCI_DATA}/splitbench_control/train"]
+  heldout: "${RCI_DATA}/splitbench/heldout"
+  hiddenbench: "${RCI_DATA}/hiddenbench"
+templates:
+  forwarding:
+    task: hiddenbench
+    task_kwargs: {profile: hidden, confidence: true, hint: true}
+    protocol: debate
+    protocol_kwargs: {rounds: 2, forward_facts: true}
+    n_agents: 4
+    run: {max-actions: 16, max-steps: 24, concurrency: 64}
+  free3:
+    task: hiddenbench
+    task_kwargs: {profile: hidden, confidence: true, hint: true}
+    protocol: debate
+    protocol_kwargs: {rounds: 3}
+    n_agents: 4
+    run: {max-actions: 16, max-steps: 24, concurrency: 64}
+  free3_3step:
+    task: hiddenbench
+    task_kwargs: {profile: hidden, confidence: true, hint: true}
+    protocol: debate
+    protocol_kwargs: {rounds: 3}
+    n_agents: 4
+    run: {max-actions: 16, max-steps: 3, concurrency: 16}
+  pool:
+    task: hiddenbench
+    task_kwargs: {profile: hidden, confidence: true}
+    protocol: independent
+    n_agents: 4
+    run: {max-actions: 16, max-steps: 24, concurrency: 16}
+sft: {batch: 8, lr: 2.0e-6}
+chains:
+  step3_9:
+    label: Qwen3.5-9B, 3-step debate
+    base: qwen3.5-9b
+    gpus: 4
+    lineages: {l0: 0, l1: 1}
+    harvest:
+      G0: {seeds: {forwarding: [4], free3: [4, 5]}, max_steps: 24}
+      G1: {seeds: {forwarding: [10, 11], free3: [10, 11]}, by_lineage: true, max_steps: 24}
+    generations:
+      G1: {parent: G0, rows: {kind: rows, source: G0, cells: [forwarding], submit_turns: keep, limit: 0}, steps: 240}
+      G2: {parent: G1, rows: {kind: resample, source: G1, k: 4}, steps: 240}
+      control: {parent: G1, rows: {kind: resample, source: G0, contexts: G1, k: 4}, steps: 240}
+    eval: {template: free3_3step, seeds: 6-9}
+    pool: {seeds: 0-7}
+    replication: {generations: [G2, control], training_seeds: [3, 4, 5, 6], eval_seeds: 6-9, multipliers: {step: 1.96, control: 2.50}}
+    multipliers: {step: 1.96, control: 2.24}
+  step3_27:
+    label: Qwen3.8-27B, 3-step debate
+    base: qwen3.8-27b
+    gpus: 8
+    lineages: {l0: 0, l1: 1}
+    harvest:
+      G0: {seeds: {forwarding: [0], free3: [10]}, max_steps: 1}
+    generations:
+      G1: {parent: G0, rows: {kind: context_rows, source: G0}, steps: 240}
+      G2: {parent: G1, rows: {kind: context_rows, source: G1, contexts: G0, k: 4}, steps: 240}
+      control: {parent: G1, rows: {kind: context_rows, source: G0, contexts: G0, k: 4}, steps: 240}
+    eval: {template: free3_3step, seeds: 6-9}
+    pool: {seeds: 0-7}
+    multipliers: {step: 1.96, control: 2.24}
+  standard9:
+    label: Qwen3.5-9B, standard debate
+    base: qwen3.5-9b
+    gpus: 4
+    lineages: {l0: 0, l1: 1}
+    reuse: {harvest: step3_9, pool: step3_9}
+    generations:
+      G2: {parent: G1, rows: {kind: resample, source: G1, k: 4, commit: 0.25}, steps: 320, tag: c}
+      control: {parent: G1, rows: {kind: resample, source: G0, contexts: G1, k: 4, commit: 0.25, commit_seeds: {l0: [4], l1: [5]}}, steps: 320, tag: c}
+    eval: {template: free3, seeds: 10-13}
+    pool: {seeds: 0-7}
+    replication: {generations: [G2, control], training_seeds: [2, 3, 4, 5], eval_seeds: 14-17, with: [G0, G1], multipliers: {step: 1.96, control: 2.24}}
+    multipliers: {step: 1.96, control: 2.24}
+  standard4:
+    label: Qwen3.5-4B, standard debate
+    base: qwen3.5-4b
+    gpus: 4
+    lineages: {l0: 0, l1: 1}
+    harvest:
+      G0: {seeds: {forwarding: [4], free3: [30, 31, 36, 37]}, max_steps: 24}
+      G1: {seeds: {free3: [32, 33]}, max_steps: 24}
+    operator: &op4 {kind: resample, contexts: G0, k: 4, cells: [forwarding], criterion: strict, transplant: true, commit: 0.25, weighting: rows}
+    generations:
+      G1: {parent: G0, rows: {<<: *op4, source: G0, commit_seeds: [30, 31]}, steps: 480}
+      G2: {parent: G1, rows: {<<: *op4, source: G1, commit_seeds: [32, 33]}, steps: 480}
+      control: {parent: G1, rows: {<<: *op4, source: G0, commit_seeds: [36, 37]}, steps: 480}
+    eval: {template: free3, seeds: 6-21}
+    pool: {seeds: 0-7}
+    multipliers: {step: 1.96, control: 2.24}

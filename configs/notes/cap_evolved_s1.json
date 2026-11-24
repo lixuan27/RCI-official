@@ -1,0 +1,4 @@
+{
+ "kind": "shared",
+ "notes": "Rounds 0-1: all post own facts verbatim. P1 gives P0 one read; P1 posts only its own fact. P2: when P1's own message appears, read it; post verbatim P2+P1. P3: when P2's bundle appears, read it; post verbatim P3+P2+P1. If absent, read P2 own; post P3+P2, naming P1 missing. P0: use two reads to obtain P1,P2,P3: prefer P3's triple; else P2's double + P3 own; else P3's double + P1 own. If complete, post analysis immediately; else post known facts verbatim and name missing. If no analysis by round 4: P2, P3, then P1 post missing facts verbatim; anyone reading a full-minus-own bundle posts analysis. All: answer only after an analysis or a message with all four facts; if none, wait through hold and answer only from a complete bundle, never partial."
+}

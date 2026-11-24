@@ -1,0 +1,10 @@
+experiment: supervisor
+paper: [Appendix E]
+chain: step3_27
+generation: G1
+lineages: [l0, l1]
+versions: 2
+dev_tasks: 48
+dev_seed: 74
+rules_only: true
+eval: {template: free3_3step, seeds: 70-73}

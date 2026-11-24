@@ -1,0 +1,45 @@
+experiment: chains_planbench
+paper: [Table 6, Figure 10a, Appendix rounds table]
+base: {served: qwen3.5-9b, weights: "${RCI_MODELS}/Qwen3.5-9B"}
+chains:
+  planbench:
+    label: PlanBench Blocksworld plan generation, four Qwen3.5-9B agents
+    adapter: planbench
+    sets_dir: "${RCI_DATA}/chains/planbench"
+    mode: think
+    concurrency: 32
+    sets:
+      seed: planbench-sets-v1
+      example_pool: {4: 24, 5: 400}
+      select: {size: 300, mix: {4: "1/4", 5: "3/4"}}
+      confirm: {size: 800, mix: {4: "1/50", 5: "49/50"}}
+      train: {size: 1000, mix: {4: "0", 5: "1"}}
+    rows:
+      r1_sources: [draft]
+      r2_per_q: 1
+      r3_per_q: 2
+      share_cap: {R2: 0.30, R3: 0.15}
+      len_hi: 1.1
+      len_drop_max_share: 0.25
+      require_plan_end: false
+      row_max_tokens: 16384
+    mix: {replay: 0.25, max_tokens: 8000000, min_rows: 200}
+    train: {lr: 5.0e-6, batch: 32, epochs: 2, warmup: 0.03, grad_clip: 1.0, pad_multiple: 256, steps_clip: [20, 400],
+            lr_doublings_max: 2, lr_halve_after_unhealthy: 2, seed: 2000}
+    alphas: ["1"]
+    health:
+      H1: [null, 1.25]
+      H2: [null, 1.25]
+      H3_abs: 0.005
+      H3_add: 0.005
+      H4_add: 0.02
+      H6_sub: 0.05
+      H7_add: 0.01
+      H7_line_repeats: 6
+      H7_zr: 0.08
+      H7_min_chars: 400
+      H8_abs: 0.001
+      H8_add: 0.001
+      runaway_ratio: 1.5
+    release: {k: 1.645, margin: 0.0, strict: false, positive: true}
+    stop: {max_releases: 4, max_rounds: 12}

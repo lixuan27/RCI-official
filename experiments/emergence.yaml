@@ -1,0 +1,200 @@
+experiment: emergence
+paper: [Table 3a, Table 3b, Figure 5, Figure 6, Appendix other families]
+templates:
+  free_task: &free_task {profile: hidden, confidence: true, hint: true, conclude: complete}
+  cap_task: &cap_task {profile: hidden, confidence: true, hint: true, conclude: complete, provenance: true, relay_doc: true}
+  no_relay_task: &no_relay_task {profile: hidden, confidence: true, hint: true, conclude: complete, provenance: true, forward_own_only: true}
+  pool_task: &pool_task {profile: hidden, confidence: true}
+  sym1: &sym1 {read_budget: [1], choice: true, broadcast: full, wait_until: 16}
+  sym1_t: &sym1_t {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true}
+  sym1_tp: &sym1_tp {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2}
+  cap: &cap {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, k: 16, budget_cap: 2}
+models:
+  q27: qwen3.8-27b
+  q4: qwen3.5-4b
+  q9: qwen3.5-9b
+  q35: qwen3.6-35b-a3b
+  glm:
+    served: glm-4.5-air-fp8
+    run: {temperature: 0.6, top-p: 0.95}
+  gptoss:
+    served: gpt-oss-120b
+    run: {temperature: 1.0, top-p: 1.0, reasoning-effort: medium}
+defaults:
+  task: hiddenbench
+  n_agents: 4
+  seeds: 0-3
+  run: {max-actions: 16, max-steps: 24, gen-limit: 16384, concurrency: 24, save-transcripts: true}
+cells:
+  - name: no_transfer
+    label: No transfer
+    task_kwargs: *free_task
+    protocol: blackboard
+    protocol_kwargs: *sym1
+    models: [q27, q4, q9, q35, glm, gptoss]
+  - name: self_organized
+    label: Self-organized
+    task_kwargs: *free_task
+    protocol: blackboard
+    protocol_kwargs: *sym1_t
+    models: [q27, q4, q9, q35, glm, gptoss]
+  - name: planning
+    label: Self-organized + planning round
+    task_kwargs: *free_task
+    protocol: blackboard
+    protocol_kwargs: *sym1_tp
+    models: [q27]
+  - name: hub
+    label: Designed hub
+    task_kwargs: *free_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [4, -1], choice: true, broadcast: full, wait_until: 16}
+    models: [q27]
+  - name: prompt_rules
+    label: Prompt from the rules
+    task_kwargs: *free_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, prompt_file: "${CONFIGS}/notes/free_rules.json"}
+    models: [q27]
+  - name: prompt_evolved_s0
+    label: Evolved prompt
+    dir: prompt_evolved
+    task_kwargs: *free_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, prompt_file: "${CONFIGS}/notes/free_evolved_s0.json"}
+    models: [q27]
+  - name: prompt_evolved_s1
+    label: Evolved prompt, second chain
+    dir: prompt_evolved_s1
+    task_kwargs: *free_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, prompt_file: "${CONFIGS}/notes/free_evolved_s1.json"}
+    models: [q27]
+  - name: cap_pool
+    label: Independent members (56 tasks)
+    task_kwargs: *pool_task
+    protocol: independent
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 0-16
+    models: [q27, glm, gptoss]
+  - name: planning56
+    label: Self-organized + planning round (56 tasks)
+    task_kwargs: *free_task
+    protocol: blackboard
+    protocol_kwargs: *sym1_tp
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    models: [glm, gptoss]
+  - name: cap_free
+    label: Self-organized + planning (no cap)
+    task_kwargs: *cap_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, k: 16}
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 0-7
+    models: [q27, glm, gptoss]
+  - name: cap
+    label: Self-organized + planning (cap)
+    task_kwargs: *cap_task
+    protocol: blackboard
+    protocol_kwargs: *cap
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 0-7
+    models: [q27, glm, gptoss]
+  - name: cap_no_planning
+    label: Self-organized (cap)
+    task_kwargs: *cap_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, k: 16, budget_cap: 2}
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 0-7
+    models: [q27]
+  - name: cap_no_relay
+    label: No relay (cap)
+    task_kwargs: *no_relay_task
+    protocol: blackboard
+    protocol_kwargs: *cap
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 0-7
+    models: [q27]
+  - name: cap_rules_A
+    label: Cap + prompt (rules)
+    dir: cap_rules
+    task_kwargs: *cap_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, k: 16, budget_cap: 2, prompt_file: "${CONFIGS}/notes/cap_rules_A.json"}
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 0-3
+    models: [q27]
+  - name: cap_rules_B
+    label: Cap + prompt (rules), second prompt
+    dir: cap_rules
+    task_kwargs: *cap_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, k: 16, budget_cap: 2, prompt_file: "${CONFIGS}/notes/cap_rules_B.json"}
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 4-7
+    models: [q27]
+  - name: cap_evolved_s0
+    label: Cap + prompt (evolved)
+    dir: cap_evolved
+    task_kwargs: *cap_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, k: 16, budget_cap: 2, prompt_file: "${CONFIGS}/notes/cap_evolved_s0.json"}
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 0-3
+    models: [q27]
+  - name: cap_evolved_s1
+    label: Cap + prompt (evolved), second chain
+    dir: cap_evolved
+    task_kwargs: *cap_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [1], choice: true, broadcast: full, wait_until: 16, transfers: true, planning_steps: 2, k: 16, budget_cap: 2, prompt_file: "${CONFIGS}/notes/cap_evolved_s1.json"}
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 4-7
+    models: [q27]
+  - name: tree
+    label: Designed tree
+    task_kwargs: *cap_task
+    protocol: blackboard
+    protocol_kwargs: {read_budget: [2, 1, -1], choice: true, broadcast: full, wait_until: 16, transfers: false, planning_steps_by_seat: [4, 2, 2, 2], k: 16, prompt_file: "${CONFIGS}/notes/hub_tree4.json"}
+    example_ids: "@${CONFIGS}/hiddenbench/tasks56.json"
+    seeds: 0-7
+    models: [q27, glm, gptoss]
+grade:
+  options: [--stratify-seats, --seat-split, balanced, --strict-pool, --task-rng]
+  tasks:
+    free_budget:
+      task: hiddenbench
+      models: [q27]
+      pool: ["ladder:pool"]
+      cells: [no_transfer, self_organized, planning, hub]
+    prompts:
+      task: hiddenbench
+      models: [q27]
+      own_family: true
+      pool: [cap_pool]
+      cells:
+        - {cell: planning, label: "Self-org. (56)"}
+        - prompt_rules
+        - {cell: prompt_evolved_s0, label: "Evolved prompt (first chain)"}
+        - {cell: prompt_evolved_s1, label: "Evolved prompt (second chain)"}
+    cap:
+      task: hiddenbench
+      models: [q27]
+      pool: [cap_pool]
+      cells: [cap_no_relay, cap_no_planning, cap, cap_rules_A, cap_evolved_s0, tree, cap_free]
+    families56:
+      task: hiddenbench
+      models: [glm, gptoss]
+      own_family: true
+      pool: [cap_pool]
+      cells: [planning56, cap_free, cap, tree]
+structure:
+  free_budget: {models: [q27, q4, q9, q35, glm, gptoss], cells: [no_transfer, self_organized, planning, hub]}
+  cap: {models: [q27], cells: [cap_no_relay, cap_no_planning, cap, cap_rules_A, cap_evolved_s0, tree, cap_free]}
+  pairs: [[self_organized, no_transfer]]
+self_prompt:
+  hiddenbench_rules: {model: q27, kind: rules, out: "${RCI_RESULTS}/emergence/notes/free_rules.json", task_kwargs: *free_task, protocol_kwargs: *sym1_tp}
+  hiddenbench_evolved: {model: q27, kind: evolved, generations: 4, per_generation: 16, seeds: [0, 1], out: "${RCI_RESULTS}/emergence/notes/free_evolved_s{seed}.json", task_kwargs: *free_task, protocol_kwargs: *sym1_tp}
+  cap_rules: {model: q27, kind: rules, seeds: [0, 1], args: [--cap, 2, --relay], out: "${RCI_RESULTS}/emergence/notes/cap_rules_s{seed}.json", task_kwargs: *cap_task, protocol_kwargs: *cap}
+  cap_evolved: {model: q27, kind: evolved, generations: 4, per_generation: 16, seeds: [0, 1], args: [--cap, 2, --relay], out: "${RCI_RESULTS}/emergence/notes/cap_evolved_s{seed}.json", task_kwargs: *cap_task, protocol_kwargs: *cap}

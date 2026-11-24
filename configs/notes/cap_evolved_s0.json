@@ -1,0 +1,4 @@
+{
+ "kind": "shared",
+ "notes": "Round 0: all post own fact exactly. P1 gifts 1 to P3; P2 gifts 1 to P0. If a gift is late, wait for it before reading. P1/P2 wait; no answer before analysis. Round 1: P0 reads P2; P3 reads P1. Keep one read each unused. Round 2: P0 posts P0+P2 exact; P3 posts P1+P3 exact. Round 3: P0 reads P3\u2019s relay; if all four facts are known, P0 posts analysis at once. If P0 is silent by round 4, P3 reads P0\u2019s relay and posts analysis at once if it has all four facts. If P3\u2019s relay was absent, P3 must not wait for P0. If P0\u2019s relay was absent, P0 posts at once after reading P3\u2019s relay. If no analysis by round 7, the first all-facts holder posts analysis. When analysis appears, everyone answers exactly its answer; never answer from partial facts."
+}

@@ -1,0 +1,4 @@
+{
+ "kind": "shared",
+ "notes": "- Round 0: P0 posts own fact word-for-word. P1-P3 post their facts and give their 1 read to P0 immediately. - P0: use own read plus gifts to read P1, P2, P3 as soon as each fact is visible. Do not wait. Once all three are read, post one analysis naming the exact final choice, then answer that choice next round. Do not wait for others. - P1-P3: after posting and gifting, do not answer from partial facts. Wait until P0's analysis is visible, then answer its exact choice. - If a gift is late, gift it the moment possible. P0 spends the late gift on the missing fact and posts analysis as soon as all three are read. If no analysis by round 5, P0 answers from complete facts; P1-P3 copy P0."
+}

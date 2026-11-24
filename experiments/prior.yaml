@@ -1,0 +1,69 @@
+experiment: prior
+paper: [Figure 3c, Appendix Table prior]
+templates:
+  gpqa: &gpqa {confidence: true}
+  bcp: &bcp {}
+  bcp_c: &bcp_c {confidence: true}
+  lb2: &lb2 {confidence: true}
+  mmld: &mmld {subset_seed: 0}
+  mmld_c: &mmld_c {subset_seed: 0, confidence: true}
+  swe: &swe {}
+  swe_c: &swe_c {confidence: true}
+  fate: &fate {split: M}
+  fate_c: &fate_c {split: M, confidence: true}
+models:
+  q9: qwen3.5-9b
+defaults:
+  seeds: [0]
+  run: {concurrency: 16}
+judge: qwen3.6-35b-a3b
+judged: [browsecomp, mmlongdoc]
+cells:
+  - {name: gpqa_pool, label: Independent, task: gpqa, task_kwargs: *gpqa, protocol: independent, n_agents: [1, 4, 8, 16]}
+  - {name: gpqa_env, label: Independent same environment, task: gpqa, task_kwargs: *gpqa, protocol: blackboard_private, n_agents: [4, 8, 16]}
+  - {name: gpqa_debate, label: Debate, task: gpqa, task_kwargs: *gpqa, protocol: debate, n_agents: [4, 8, 16]}
+  - {name: gpqa_delm, label: DeLM, task: gpqa, task_kwargs: *gpqa, protocol: delm, n_agents: [4, 8, 16]}
+  - {name: gpqa_aorchestra, label: AOrchestra, task: gpqa, task_kwargs: *gpqa, protocol: aorchestra, n_agents: 1, stops: true}
+  - {name: gpqa_bb, label: Blackboard, task: gpqa, task_kwargs: *gpqa, protocol: blackboard, n_agents: [4, 8, 16]}
+  - {name: bcp_pool, label: Independent, task: browsecomp, task_kwargs: *bcp, protocol: independent, n_agents: [1, 2, 4, 8, 16], run: {limit: 100}}
+  - {name: bcp_pool_c, label: Independent with confidence, task: browsecomp, task_kwargs: *bcp_c, protocol: independent, n_agents: [4, 8, 16], run: {limit: 100}}
+  - {name: bcp_debate, label: Debate, task: browsecomp, task_kwargs: *bcp, protocol: debate, n_agents: [4, 8, 16], run: {limit: 100}}
+  - {name: bcp_delm, label: DeLM, task: browsecomp, task_kwargs: *bcp, protocol: delm, n_agents: [4, 8, 16], run: {limit: 100}}
+  - {name: bcp_aorchestra, label: AOrchestra, task: browsecomp, task_kwargs: *bcp, protocol: aorchestra, n_agents: 1, stops: true, run: {limit: 100}}
+  - {name: bcp_bb, label: Blackboard, task: browsecomp, task_kwargs: *bcp_c, protocol: blackboard, n_agents: [4, 8, 16], run: {limit: 100}}
+  - {name: lb2_pool, label: Independent, task: longbench2, task_kwargs: *lb2, protocol: independent, n_agents: 8}
+  - {name: lb2_env, label: Independent same environment, task: longbench2, task_kwargs: *lb2, protocol: blackboard_private, n_agents: 4}
+  - {name: lb2_debate, label: Debate, task: longbench2, task_kwargs: *lb2, protocol: debate, n_agents: 8}
+  - {name: lb2_bb, label: Blackboard, task: longbench2, task_kwargs: *lb2, protocol: blackboard, n_agents: [4, 8]}
+  - {name: mmld_pool, label: Independent, task: mmlongdoc, task_kwargs: *mmld, protocol: independent, n_agents: [1, 2, 4, 8, 16], run: {limit: 300}}
+  - {name: mmld_debate, label: Debate, task: mmlongdoc, task_kwargs: *mmld, protocol: debate, n_agents: 16, run: {limit: 300}}
+  - {name: mmld_delm, label: DeLM, task: mmlongdoc, task_kwargs: *mmld, protocol: delm, n_agents: 16, run: {limit: 300}}
+  - {name: mmld_aorchestra, label: AOrchestra, task: mmlongdoc, task_kwargs: *mmld, protocol: aorchestra, n_agents: 1, stops: true, run: {limit: 300}}
+  - {name: mmld_bb, label: Blackboard, task: mmlongdoc, task_kwargs: *mmld_c, protocol: blackboard, n_agents: [4, 8, 16], run: {limit: 300}}
+  - {name: swe_pool, label: Independent, task: swe, task_kwargs: *swe, protocol: independent, n_agents: [1, 2, 4, 8], run: {limit: 100}}
+  - {name: swe_debate, label: Debate, task: swe, task_kwargs: *swe, protocol: debate, n_agents: 8, run: {limit: 100}}
+  - {name: swe_delm, label: DeLM, task: swe, task_kwargs: *swe, protocol: delm, n_agents: 8, run: {limit: 100}}
+  - {name: swe_aorchestra, label: AOrchestra, task: swe, task_kwargs: *swe, protocol: aorchestra, n_agents: 1, stops: true, run: {limit: 100}}
+  - {name: swe_bb, label: Blackboard, task: swe, task_kwargs: *swe_c, protocol: blackboard, n_agents: [4, 8], run: {limit: 100}}
+  - {name: fate_pool, label: Independent, task: fate, task_kwargs: *fate, protocol: independent, n_agents: [1, 2, 4, 8, 16]}
+  - {name: fate_debate, label: Debate, task: fate, task_kwargs: *fate, protocol: debate, n_agents: [4, 8]}
+  - {name: fate_delm, label: DeLM, task: fate, task_kwargs: *fate, protocol: delm, n_agents: [4, 8]}
+  - {name: fate_bb, label: Blackboard, task: fate, task_kwargs: *fate_c, protocol: blackboard, n_agents: [4, 8, 16]}
+reviewers:
+  q9: {served: qwen3.5-9b, label: 9B reviewer}
+  q27: {served: qwen3.8-27b, label: 27B reviewer, review_scale: 4.4}
+reviews:
+  - {cell: gpqa_bb_n16, task: gpqa, task_kwargs: *gpqa, mode: read}
+  - {cell: bcp_bb_n16, task: browsecomp, task_kwargs: *bcp_c, mode: verify}
+  - {cell: lb2_bb_n8, task: longbench2, task_kwargs: *lb2, mode: verify}
+  - {cell: mmld_bb_n16, task: mmlongdoc, task_kwargs: *mmld_c, mode: verify}
+grade:
+  options: [--strict-pool, --bh-family, census, --task-rng]
+  tasks:
+    gpqa: {task: gpqa, pool: [gpqa_pool], cells: [gpqa_debate, gpqa_delm, gpqa_aorchestra, gpqa_bb], reviews: [gpqa_bb_n16]}
+    browsecomp: {task: browsecomp, pool: [bcp_pool, bcp_pool_c], cells: [bcp_debate, bcp_delm, bcp_aorchestra, bcp_bb], reviews: [bcp_bb_n16]}
+    longbench2: {task: longbench2, min_pool: 8, pool: [lb2_pool, lb2_env], cells: [lb2_debate, lb2_bb], reviews: [lb2_bb_n8]}
+    mmlongdoc: {task: mmlongdoc, pool: [mmld_pool], cells: [mmld_debate, mmld_delm, mmld_aorchestra, mmld_bb], reviews: [mmld_bb_n16]}
+    swe: {task: swe, pool: [swe_pool], cells: [swe_debate, swe_delm, swe_aorchestra, swe_bb]}
+    fate: {task: fate, pool: [fate_pool], cells: [fate_debate, fate_delm, fate_bb]}
+    gpqa_env: {task: gpqa, pool: [gpqa_env], cells: [gpqa_debate, gpqa_delm, gpqa_aorchestra, gpqa_bb]}

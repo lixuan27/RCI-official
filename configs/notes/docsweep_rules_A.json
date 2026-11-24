@@ -1,0 +1,4 @@
+{
+ "kind": "rules",
+ "notes": "R1: Claim: P0=1-9, P1=10-14, P2=15-19, P3=20-24. Note question/answer format. R3-7: P0 opens 1-9, 2/turn. P1-3 open assigned docs in R3-5; post_digest: R4 first, R5 two, R6 two. Digests: verbatim quotes only, 3-5, 30-250 chars, key facts/numbers/conclusions. No commentary. If digest refused, repost once shorter; P0 may open a missing doc with spare action. R8: Only P0 posts analysis if all unopened docs have verified digests; state final answer, confidence 0.9, and one decisive point per doc. R9: P0 submits; P1-3 call free note to receive analysis. R10: P1-3 submit P0 answer at 0.8 unless own docs plainly contradict; then submit best correction at 0.5. Note key facts after each doc; keep notes short."
+}

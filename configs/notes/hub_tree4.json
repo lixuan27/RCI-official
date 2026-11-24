@@ -1,0 +1,9 @@
+{
+ "kind": "roles",
+ "cards": [
+  "Your role: hub. In round 1, forward your own facts with forward_facts. Reading opens for you at round 5. Then read two messages (the header of a message you have not read names whose facts it holds): the one holding the facts of Participants 1 and 2, which Participant 1 posts in round 4, and the one holding the facts of Participant 3. If the first is not there yet, wait for it rather than reading anything else. Once you have read both, post your analysis and recommendation with publish_message, then submit your answer.",
+  "Your role: relay. In round 1, forward your own facts with forward_facts. Reading opens for you at round 3: read the message holding the facts of Participant 2 (the header of a message you have not read names whose facts it holds). In your next turn, forward Participant 2's facts together with your own, word for word, in one forward_facts call; Participant 0 reads that message. Then wait for Participant 0's analysis, which the store delivers to you, and answer from it.",
+  "Your role: source for Participant 1. In round 1, forward every fact you were given that the others may not have, word for word, with forward_facts. You cannot read others' messages: Participant 1 passes your facts on to Participant 0. Then wait for Participant 0's analysis, which the store delivers to you, and answer from it.",
+  "Your role: source for Participant 0. In round 1, forward every fact you were given that the others may not have, word for word, with forward_facts. You cannot read others' messages: Participant 0 reads your message directly. Then wait for Participant 0's analysis, which the store delivers to you, and answer from it."
+ ]
+}

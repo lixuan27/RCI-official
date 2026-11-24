@@ -1,0 +1,24 @@
+experiment: collective
+paper: [Appendix Table collective (a), Appendix Table collective (b)]
+solo:
+  chain: standard9
+  generations: [G0, G1, G2]
+  cell:
+    task: hiddenbench
+    task_kwargs: {profile: full, confidence: true, hint: true}
+    protocol: independent
+    n_agents: 1
+    seeds: 140-147
+    run: {max-actions: 16, max-steps: 24, concurrency: 16}
+  bound: 0.03
+own_pool:
+  chains:
+    step3_9: {generations: [G0, G1, G2], replication: true}
+    step3_27: {generations: [G0, G1, G2], replication: false}
+  cell:
+    task: hiddenbench
+    task_kwargs: {profile: hidden, confidence: true}
+    protocol: independent
+    n_agents: 4
+    seeds: 0-7
+    run: {max-actions: 16, max-steps: 24, concurrency: 16}

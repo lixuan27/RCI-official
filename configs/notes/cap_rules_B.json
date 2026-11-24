@@ -1,0 +1,4 @@
+{
+ "kind": "rules",
+ "notes": "Follow this order; answer only after the analysis. 0: Post your given facts verbatim. 1: Read 0\u2019s message. Post your given facts verbatim, then copy 0\u2019s entire message verbatim. 2: Read 1\u2019s message. Post your given facts verbatim, then copy 1\u2019s entire message verbatim. 3: Read 2\u2019s message. Post your given facts verbatim, then copy 2\u2019s entire message verbatim. Do not analyze yet. 0: Read 3\u2019s message. It contains all four fact sets. Post one analysis using all facts and stating the best choice. When 0\u2019s analysis appears, every participant answers with that choice. Do not give reading budget, paraphrase facts, or answer early."
+}

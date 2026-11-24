@@ -1,0 +1,69 @@
+table_credit:
+  untrained: null
+  own_success:
+    run_id: credit_own_success
+    credit: team
+    n_agents: 1
+    protocol: independent
+  imitate_wins:
+    run_id: credit_imitate_wins
+    credit: team
+    adv_mode: raft
+  one_trainee:
+    run_id: credit_one_trainee
+    trainees: one
+    credit: team
+  team_reward:
+    run_id: credit_team_reward
+    credit: team
+  shapley:
+    run_id: credit_shapley
+    credit: shapley
+  shapley_flow:
+    run_id: credit_shapley_flow
+    credit: shapley_flow
+table_stages:
+  dist_shapley_flow:
+    run_id: credit_dist_shapley_flow
+    credit: shapley_flow
+    task_kwargs.partition: snippet
+    task_kwargs.share_hint: true
+    ckpt_min_len: 8192
+  dist_shapley:
+    run_id: credit_dist_shapley
+    credit: shapley
+    task_kwargs.partition: snippet
+    task_kwargs.share_hint: true
+    ckpt_min_len: 8192
+table_reward:
+  coverage_flow:
+    run_id: credit_reward_coverage
+    credit: shapley_flow
+    task_kwargs.f1: false
+  recall_own_success:
+    run_id: credit_reward_recall_own
+    credit: team
+    n_agents: 1
+    protocol: independent
+    task_kwargs.f1: false
+    task_kwargs.strict: true
+    ckpt_min_len: 8192
+  recall_shapley:
+    run_id: credit_reward_recall_shapley
+    credit: shapley
+    task_kwargs.f1: false
+    task_kwargs.strict: true
+    ckpt_min_len: 8192
+  f1_flow:
+    run_id: credit_reward_f1
+    credit: shapley_flow
+  gated_flow:
+    run_id: credit_reward_gated
+    credit: shapley_flow
+    task_kwargs.f1: false
+    task_kwargs.strict: true
+    task_kwargs.penalty: 0.5
+    ckpt_min_len: 8192
+gpus:
+  default: {train: "0,1", policy: "2,3", peer: ""}
+  one_trainee: {train: "0,1", policy: "2", peer: "3"}

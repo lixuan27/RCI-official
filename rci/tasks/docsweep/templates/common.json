@@ -1,0 +1,24 @@
+{
+  "first_names": ["Mara", "Tobias", "Ines", "Rafael", "Edith", "Callum", "Nadia", "Oskar", "Priya", "Lucien", "Greta",
+                  "Idris", "Selma", "Anouk", "Bram", "Clio", "Dorian", "Elin", "Felix", "Hanne", "Ivo", "Kasia", "Leif",
+                  "Mirela", "Niall", "Odile", "Pavel", "Rhea", "Sven", "Tamsin", "Ugo", "Vera", "Wim", "Yara", "Zeno",
+                  "Agnes", "Bastian", "Cosima", "Dmitri", "Esme"],
+  "last_names": ["Quinn", "Okafor", "Lindqvist", "Moreau", "Haldane", "Petrov", "Abernethy", "Castellan", "Drummond",
+                 "Esposito", "Fairweather", "Gallo", "Hartmann", "Iwasaki", "Jovanovic", "Kowalczyk", "Larsen", "Mbeki",
+                 "Novak", "Oduya", "Pellegrini", "Rasmussen", "Sato", "Thorsen", "Ulrich", "Vasquez", "Whitcombe",
+                 "Yilmaz", "Zelenko", "Brennan", "Delacroix", "Faulkner"],
+  "region_adj": ["Upper", "Lower", "Northern", "Southern", "Eastern", "Western", "Middle", "Outer", "Inner", "High"],
+  "region_names": ["Kessel", "Arran", "Tallis", "Morven", "Brenner", "Calder", "Duval", "Esk", "Farrow", "Harlow",
+                   "Ister", "Jura", "Kinross", "Lomond", "Nairn", "Orrin", "Pentland", "Strath"],
+  "region_kinds": ["Valley", "Basin", "Plateau", "Uplands", "Lowlands", "Coast", "Hills", "Plain"],
+  "email": {
+    "subjects": ["{name}: monthly figures", "{name}: site update", "{name}: notes from the week",
+                 "{name}: readings and survey"],
+    "greetings": ["Hi {first},", "Hello {first},", "Dear {first},"],
+    "signoffs": ["Best, {first}", "Thanks, {first}", "Cheers, {first}", "Regards, {first}"]
+  },
+  "probe_stopwords": ["which", "meet", "both", "these", "conditions", "from", "earlier", "later", "than", "more",
+                      "that", "with", "their", "there", "exactly", "same", "answer", "then", "counting", "each",
+                      "some", "documents", "call", "plus", "along", "stands", "higher", "longer", "larger", "full",
+                      "total", "exactly", "only", "one's", "itself", "into", "over", "also", "lost", "fell"]
+}

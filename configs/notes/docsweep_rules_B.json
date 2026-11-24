@@ -1,0 +1,4 @@
+{
+ "kind": "rules",
+ "notes": "Rounds 1-2: note question keywords and plan. R3 claim: P0 1-4, P1 5-9, P2 10-13, P3 14-24. P0: R3 open 1,2; R4 3,4; post digest for each. Then note until first analysis; submit/hold its exact answer/confidence. P1: R3 5,6; R4 7,8; R5 9; same. P2: R3 10,11; R4 12,13; same. P3: R3 14,15; R4 16,17; R5 18,19; R6 20,21; R7 22,23; R8 24. Use note until board shows digests 1-13; post_analysis: \u201cAnswer: [exact] (confidence [n])\u201d plus one sentence. Hold/submit same. Digests: 1-8 verbatim quotes, 20-300 chars, prioritizing question keywords, answer markers, names, numbers, dates, contradictions; no commentary. If refused, repost fixed. Only P3 posts analysis. If no analysis by R17, submit/hold best guess."
+}

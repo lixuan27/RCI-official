@@ -1,0 +1,18 @@
+experiment: credit
+paper: [Table 5, Appendix Table reward, Appendix Table stages, Figure example, Figure mechanism b]
+base_config: "${CONFIGS}/credit/base.yaml"
+arms_file: "${CONFIGS}/credit/arms.yaml"
+model: qwen3.5-4b
+eval:
+  data: "${RCI_DATA}/audit/eval"
+  task_kwargs: {level: 4}
+  protocol: blackboard
+  n_agents: [4, 8]
+  seeds: [0, 1]
+  step: 40
+  run: {max-actions: 250, max-steps: 250, concurrency: 16}
+  boot: 4000
+stages:
+  task_kwargs: {level: 4, partition: snippet, share_hint: true}
+  steps: [20, 40]
+  n_agents: [4]
