@@ -12,7 +12,7 @@
 [![Project page](https://img.shields.io/badge/Project-Page-4b6b84?style=for-the-badge)](https://lixuan27.github.io/RCI/)
 [![Blog](https://img.shields.io/badge/Research-Blog-6f6590?style=for-the-badge)](https://lixuan27.github.io/RCI/blog/)
 [![Playground](https://img.shields.io/badge/Interactive-Playground-4f7d71?style=for-the-badge)](https://lixuan27.github.io/RCI/playground/)
-[![Paper](https://img.shields.io/badge/arXiv-coming%20soon-9a4a57?style=for-the-badge)](https://lixuan27.github.io/RCI/)
+[![arXiv](https://img.shields.io/badge/arXiv-2611.32606-9a4a57?style=for-the-badge)](https://arxiv.org/abs/2611.32606)
 
 ![Python](https://img.shields.io/badge/python-3.11%2B-3f6a8c)
 ![License](https://img.shields.io/badge/license-MIT-8a95a0)
@@ -34,7 +34,7 @@ Language models increasingly work as teams of agents, and a team is usually cred
 - **Emergent organization.** Identical agents with a scarce reading budget build hubs and relays on their own, and the token accounting shows what this coordination costs.
 - **Recursive collective intelligence.** Label-free generations train on turns that the group's own protocol verifies, and gated recursion releases a new generation only when it beats its predecessor on fresh tasks.
 
-The release reproduces the **procedures** of the paper. Runs are sampled at temperature 1 on served models, so a rerun gives new records; the drivers print every run, training and grading command so that each number in the paper can be regenerated with the same settings. This README therefore quotes no results; the [project page](https://lixuan27.github.io/RCI/) and the [blog](https://lixuan27.github.io/RCI/blog/) present them.
+The release reproduces the **procedures** of the paper. Runs are sampled at temperature 1 on served models, so a rerun gives new records; the drivers print every run, training and grading command so that each number in the paper can be regenerated with the same settings. This README therefore quotes no results; the [paper](https://arxiv.org/abs/2611.32606), the [project page](https://lixuan27.github.io/RCI/) and the [blog](https://lixuan27.github.io/RCI/blog/) present them.
 
 <p align="center">
   <img src="assets/overview.png" width="100%" alt="One generation of recursive collective intelligence">
@@ -282,7 +282,9 @@ prompt and extraction (`rci/chains/planbench/`) and the benchmark graders keeps 
              Jiang, Liwei and Li, Manling and Ma, Yi and Fei-Fei, Li and
              Guibas, Leonidas and Wetzstein, Gordon and Choi, Yejin and
              Hong, Yining},
-  year    = {2026}
+  journal = {arXiv preprint arXiv:2611.32606},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2611.32606}
 }
 ```
 
